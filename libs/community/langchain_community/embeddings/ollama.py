@@ -170,9 +170,13 @@ class OllamaEmbeddings(BaseModel, Embeddings):
             raise ValueError(f"Error raised by inference endpoint: {e}")
 
         if res.status_code != 200:
+            possible_fix = ""
+            if res.status_code == 404:
+                possible_fix += ("\nIf the error states that specified model was not found, try changing the"
+                                 " model used by assigning the model parameter of the model you are running")
             raise ValueError(
-                "Error raised by inference API HTTP code: %s, %s"
-                % (res.status_code, res.text)
+                "Error raised by inference API HTTP code: %s, %s%s"
+                % (res.status_code, res.text, possible_fix)
             )
         try:
             t = res.json()
